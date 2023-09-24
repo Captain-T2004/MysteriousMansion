@@ -20,3 +20,4 @@ Choices = {
 # COMPLETED 
 correctChoices = ["startgame","yes","left","blue","yes","yes","yes"]
 incorrectChoices = ["PLACEHOLDER", "no", "right", "red", "no", "no", "no"]
+

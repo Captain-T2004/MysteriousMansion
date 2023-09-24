@@ -5,16 +5,13 @@ import subprocess
 import pkg_resources
 import pip
 
-def install(package):
-        pip.main(['install', package])
-
 required = {'imagegrab', 'pillow', 'pynput', 'pytesseract', 'pyautogui'}
 installed = {pkg.key for pkg in pkg_resources.working_set}
 missing = required - installed
 if(missing):
     print("the listed required packages are not installed. Installing required packages in 5secs: ",missing)
     for i in missing:
-        install(i)
+        pip.main(['install', i])
 
 print("ALL PACKAGES are installed, starting the program: ")
 
@@ -23,6 +20,7 @@ import pytesseract,pynput,pyautogui
 import time
 import os
 import GameStoryLines
+import MousePositionTracker
 
 # IMPORTING AND SETTING UP PYTESSERACT
 
@@ -36,8 +34,6 @@ GameRunning = True
 theEnd = False
 currentChoice = 0
 keyboard = pynput.keyboard.Controller()
-scanPointS = [655,850]                                              # STARTING POINT ON SCREEN FOR THE IMAGE CAPTURE
-scanPointE = [785,895]                                              # ENDING POINT ON SCREEN FOR THE IMAGE CAPTURE
 
 # FUNCTION TO TYPEOUT A STRING TO A TEXT FIELD
 def keyOut(inpString):
@@ -61,7 +57,7 @@ def readInput():
     imageObj = ImageGrab.grab(bbox=(scanPointS[0],scanPointS[1],scanPointE[0],scanPointE[1]))
     imageObj.save(os.getcwd() + "/ScreenGrab.jpeg")
 
-    imageObj = ImageOps.grayscale(imageObj)                 # GRAYSCALLING TO MAKE DETECTION EASIER
+    imageObj = ImageOps.grayscale(imageObj)                             # GRAYSCALLING TO MAKE DETECTION EASIER
     
     # EXTRACTING THE TEXT FROM THE IMAGE AND FORMATTING IT
     stringFromImage = pytesseract.image_to_string(imageObj)
@@ -97,8 +93,12 @@ def InPosition():
         return True
     return False
 
-while(GameRunning):
+print("Select the area to scan: ")
+MousePositionTracker.init()
+scanPointS = MousePositionTracker.scanPoints[0]
+scanPointE = MousePositionTracker.scanPoints[1]
 
+while(GameRunning):
     keyOut(readInput())
     ## time.sleep act as a buffer for memory to not run out too fast.
     time.sleep(5)
