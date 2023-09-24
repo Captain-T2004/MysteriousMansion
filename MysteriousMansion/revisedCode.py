@@ -5,16 +5,13 @@ import subprocess
 import pkg_resources
 import pip
 
-def install(package):
-        pip.main(['install', package])
-
 required = {'imagegrab', 'pillow', 'pynput', 'pytesseract', 'pyautogui'}
 installed = {pkg.key for pkg in pkg_resources.working_set}
 missing = required - installed
 if(missing):
     print("the listed required packages are not installed. Installing required packages in 5secs: ",missing)
     for i in missing:
-        install(i)
+        pip.main(['install', i])
 
 print("ALL PACKAGES are installed, starting the program: ")
 
@@ -61,7 +58,7 @@ def readInput():
     imageObj = ImageGrab.grab(bbox=(scanPointS[0],scanPointS[1],scanPointE[0],scanPointE[1]))
     imageObj.save(os.getcwd() + "/ScreenGrab.jpeg")
 
-    imageObj = ImageOps.grayscale(imageObj)                 # GRAYSCALLING TO MAKE DETECTION EASIER
+    imageObj = ImageOps.grayscale(imageObj)                             # GRAYSCALLING TO MAKE DETECTION EASIER
     
     # EXTRACTING THE TEXT FROM THE IMAGE AND FORMATTING IT
     stringFromImage = pytesseract.image_to_string(imageObj)
