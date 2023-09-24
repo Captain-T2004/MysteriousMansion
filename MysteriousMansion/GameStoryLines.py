@@ -1,3 +1,4 @@
+# STORY LINES OF THE GAME
 Choices = {
     "1":"This is a basic text-based game called The Mysterious Mansion, You find yourself standing in front of a grand mansion. The door creaks open invitingly. Do you enter? (Type yes or no)",
     "1f":"The mysterious mansion remains a tantalizing mystery, and you decide to turn back and leave. As you walk away, you can't help but wonder about the secrets that lie within.",
@@ -15,3 +16,7 @@ Choices = {
     "8":"Congratulations! You have successfully completed The Mysterious Mansion!",
     "End":"How could you fail the captain like this?."
 }
+
+# COMPLETED 
+correctChoices = ["startgame","yes","left","blue","yes","yes","yes"]
+incorrectChoices = ["PLACEHOLDER", "no", "right", "red", "no", "no", "no"]
