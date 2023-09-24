@@ -20,6 +20,7 @@ import pytesseract,pynput,pyautogui
 import time
 import os
 import GameStoryLines
+import MousePositionTracker
 
 # IMPORTING AND SETTING UP PYTESSERACT
 
@@ -33,8 +34,6 @@ GameRunning = True
 theEnd = False
 currentChoice = 0
 keyboard = pynput.keyboard.Controller()
-scanPointS = [655,850]                                              # STARTING POINT ON SCREEN FOR THE IMAGE CAPTURE
-scanPointE = [785,895]                                              # ENDING POINT ON SCREEN FOR THE IMAGE CAPTURE
 
 # FUNCTION TO TYPEOUT A STRING TO A TEXT FIELD
 def keyOut(inpString):
@@ -94,8 +93,12 @@ def InPosition():
         return True
     return False
 
-while(GameRunning):
+print("Select the area to scan: ")
+MousePositionTracker.init()
+scanPointS = MousePositionTracker.scanPoints[0]
+scanPointE = MousePositionTracker.scanPoints[1]
 
+while(GameRunning):
     keyOut(readInput())
     ## time.sleep act as a buffer for memory to not run out too fast.
     time.sleep(5)
