@@ -5,7 +5,7 @@ import subprocess
 import pkg_resources
 import pip
 
-required = {'imagegrab', 'pillow', 'pynput', 'pytesseract', 'pyautogui'}
+required = {'imagegrab', 'pillow', 'pynput', 'pytesseract', 'pyautogui', 'cvzone'}
 installed = {pkg.key for pkg in pkg_resources.working_set}
 missing = required - installed
 if(missing):
@@ -16,12 +16,9 @@ if(missing):
 print("ALL PACKAGES are installed, starting the program: ")
 
 from PIL import ImageGrab, ImageOps
-import pytesseract,pynput,pyautogui
-import time
-import os
+import pytesseract, pynput, pyautogui, MousePositionTracker, time
+import os, random, cv2
 import GameStoryLines
-import MousePositionTracker
-
 # IMPORTING AND SETTING UP PYTESSERACT
 
 from sys import platform
@@ -34,7 +31,9 @@ GameRunning = True
 theEnd = False
 currentChoice = 0
 keyboard = pynput.keyboard.Controller()
+storyIndex = randint(0,2)
 
+print(GameStoryLines.correct)
 # FUNCTION TO TYPEOUT A STRING TO A TEXT FIELD
 def keyOut(inpString):
     print(inpString)
@@ -52,43 +51,38 @@ def readInput():
     global currentChoice
     global theEnd
     global GameRunning
-
     # TAKING A SCREENSHOT OF SELECTED REGION AND SAVING IN CURRENT WORKING DIRECTORY
     imageObj = ImageGrab.grab(bbox=(scanPointS[0],scanPointS[1],scanPointE[0],scanPointE[1]))
     imageObj.save(os.getcwd() + "/ScreenGrab.jpeg")
 
-    imageObj = ImageOps.grayscale(imageObj)                             # GRAYSCALLING TO MAKE DETECTION EASIER
-    
-    # EXTRACTING THE TEXT FROM THE IMAGE AND FORMATTING IT
-    stringFromImage = pytesseract.image_to_string(imageObj)
-    iString = stringFromImage.split("\n") 
-    iString = iString[0].split(" ")
-    print(iString)
+    img = cv2.imread(os.getcwd() + "/ScreenGrab.jpeg")
+    gry = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    txt = pytesseract.image_to_string(gry, config="--psm 6")
+    iString = ''.join(i for i in txt if i.isalpha())
+    print(iString.lower())
 
     # GAME FUNCTIONING
     if(theEnd == True and InPosition()):
         theEnd = False
         currentChoice = 0
-        return GameStoryLines.Choices["End"]
+        return GameStoryLines.Choices[storyIndex]["End"]
 
-    if(currentChoice == 7 and InPosition()): return GameStoryLines.Choices["8"]
-
-    if(currentChoice == 8 and InPosition()):
+    if(currentChoice == len(GameStoryLines.Choices[storyIndex])-1 and InPosition()):
         GameRunning = False
         return ""
 
-    if(iString[0].lower() == GameStoryLines.correctChoices[currentChoice] and InPosition()):
+    if((GameStoryLines.correct[storyIndex][currentChoice] in iString.lower()) and InPosition()):
         currentChoice = currentChoice + 1
-        return GameStoryLines.Choices[str(currentChoice)]
+        return GameStoryLines.Choices[storyIndex][str(currentChoice)]
 
-    elif(iString[0].lower() == GameStoryLines.incorrectChoices[currentChoice] and InPosition()):
+    elif((GameStoryLines.incorrect[storyIndex][currentChoice] in iString.lower()) and InPosition()):
         theEnd = True
-        return GameStoryLines.Choices[str(currentChoice)+"f"]
+        return GameStoryLines.Choices[storyIndex][str(currentChoice)+"f"]
 
     return ""
 def InPosition():
-    width = 720
-    height = 920
+    width = scanPointS[0]
+    height = scanPointE[1]
     if(pyautogui.position().x>width and pyautogui.position().y>height):
         return True
     return False
@@ -100,8 +94,7 @@ scanPointE = MousePositionTracker.scanPoints[1]
 
 while(GameRunning):
     keyOut(readInput())
-    ## time.sleep act as a buffer for memory to not run out too fast.
-    time.sleep(5)
+    time.sleep(5)# time.sleep act as a buffer for memory to not run out too fast.
 
 
 

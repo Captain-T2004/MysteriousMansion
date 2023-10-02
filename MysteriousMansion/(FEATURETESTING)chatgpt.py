@@ -17,7 +17,7 @@ response = palm.chat(messages=["write me a short story for a basic text based ga
                                + "'1f' : The mysterious mansion remains a tantalizing mystery, and you decide to turn back and leave. As you walk away, you can't help but wonder about the secrets that lie within.,"
                                + "'End' : How could you fail the captain like this?.}"
                                + "correct = ['yes', 'blue', ... ] # Make sure that all the actions are covered so there should be 7 elements in both 'correct' and 'incorrect' lists"
-                               + "incorrect = ['no', 'red', ... ]"
+                               + "incorrect = ['no', 'red', ... ] # Make sure that all the actions are covered so there should be 7 elements in both 'correct' and 'incorrect' lists"
                                ])
 incorrectIndex = (response.messages[1]['content'].index('incorrect'))
 finalIndex = 0
@@ -25,3 +25,4 @@ for i in range(incorrectIndex, incorrectIndex + 100):
     if (response.messages[1]['content'][i] == ']'):
         finalIndex = i
 exec(response.messages[1]['content'][0:finalIndex+1])
+print(correct, incorrect)
